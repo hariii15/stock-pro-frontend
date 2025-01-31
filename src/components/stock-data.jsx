@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
+<<<<<<< HEAD
+=======
+import StockService from '../services/stockService';
+import api from '../api/axios';
+>>>>>>> 5785b192e0ede32048b73b5481a03ee19455168e
 import '../styles/stock-data.css';
 
 const StockData = () => {
