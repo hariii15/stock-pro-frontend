@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { useAuth, AuthProvider } from './contexts/AuthContext';
 import './styles/stock.css'; 
-import StockData from './components/StockData.jsx';
+import StockData from './components/stock-data.jsx';
 import Login from './components/Login.jsx';
 import Navbar from './components/navbar.jsx';
 import Home from './components/home.jsx';
@@ -68,8 +68,6 @@ function AppContent() {
 
 // Main App component
 function App() {
-  console.log('Google Client ID:', import.meta.env.VITE_GOOGLE_CLIENT_ID); // Debug log
-  
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <AuthProvider>
