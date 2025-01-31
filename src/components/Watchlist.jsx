@@ -9,6 +9,7 @@ const Watchlist = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,6 +51,35 @@ const Watchlist = () => {
     navigate(`/stock/${symbol}`);
   };
 
+  const handleSearch = async (value) => {
+    setSearchTerm(value);
+    if (value.length >= 1) {
+      try {
+        const response = await api.get(`/stocks/search`, {
+          params: { query: value }
+        });
+        
+        if (Array.isArray(response.data)) {
+          setSuggestions(response.data.slice(0, 5));
+        } else {
+          console.error('Unexpected response format:', response.data);
+          setSuggestions([]);
+        }
+      } catch (error) {
+        console.error('Search error:', error);
+        setSuggestions([]);
+      }
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handleSuggestionClick = (symbol) => {
+    navigate(`/stock/${symbol}`);
+    setSearchTerm('');
+    setSuggestions([]);
+  };
+
   const filteredWatchlist = watchlist.filter(stock => 
     stock.symbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
     stock.companyName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -59,7 +89,7 @@ const Watchlist = () => {
   if (error) return <div className="error">Error: {error}</div>;
 
   return (
-    <div className="watchlist-container">
+    <div className={`watchlist-container ${isFocused ? 'search-focused' : ''}`}>
       <h2 className="watchlist-title">My Watchlist</h2>
       
       <div className="search-container">
@@ -69,20 +99,42 @@ const Watchlist = () => {
             type="text"
             placeholder="Search stocks..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
+            onBlur={() => {
+              // Delay to allow clicking on suggestions
+              setTimeout(() => setIsFocused(false), 200);
+            }}
             className="search-input"
           />
           {searchTerm && (
             <button
               className="clear-button"
-              onClick={() => setSearchTerm('')}
+              onClick={() => {
+                setSearchTerm('');
+                setSuggestions([]);
+              }}
             >
               <i className="fas fa-times"></i>
             </button>
           )}
         </div>
+
+        {/* Search Suggestions */}
+        {isFocused && suggestions.length > 0 && (
+          <div className="suggestions-container">
+            {suggestions.map((suggestion) => (
+              <div
+                key={suggestion.symbol}
+                className="suggestion-item"
+                onClick={() => handleSuggestionClick(suggestion.symbol)}
+              >
+                <div className="suggestion-symbol">{suggestion.symbol}</div>
+                <div className="suggestion-name">{suggestion.name}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {watchlist.length === 0 ? (

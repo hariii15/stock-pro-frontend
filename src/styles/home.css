@@ -51,18 +51,18 @@
 
 .input-wrapper {
   position: relative;
-  background: rgba(30, 41, 59, 0.8);
+  background: rgba(30, 41, 59, 0.95);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
   margin-bottom: 1rem;
 }
 
 .input-wrapper.focused {
+  transform: scale(1.02);
   border-color: #646cff;
-  box-shadow: 0 0 0 4px rgba(100, 108, 255, 0.1);
-  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(100, 108, 255, 0.3);
 }
 
 .search-input {
@@ -70,7 +70,7 @@
   background: transparent;
   border: none;
   padding: 1rem 3rem;
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: #e2e8f0;
   outline: none;
 }
@@ -100,7 +100,7 @@
   border: none;
   color: #94a3b8;
   cursor: pointer;
-  padding: 0.25rem;
+  padding: 0.5rem;
   border-radius: 50%;
   transition: all 0.2s ease;
 }
@@ -367,4 +367,90 @@
 .stock-table tr:hover {
   background-color: rgba(106, 138, 168, 0.2);
   transition: background-color 0.3s ease;
+}
+
+/* Add or update these styles */
+.search-focused::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.search-container {
+  position: relative;
+  z-index: 12;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.suggestions-container {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 8px;
+  background: rgba(30, 41, 59, 0.98);
+  border-radius: 12px;
+  border: 1px solid rgba(100, 108, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  max-height: 300px;
+  overflow-y: auto;
+  animation: slideDown 0.2s ease-out;
+}
+
+.suggestion-item {
+  padding: 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.2s ease;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover {
+  background: rgba(100, 108, 255, 0.2);
+}
+
+.suggestion-symbol {
+  font-weight: 600;
+  color: #e2e8f0;
+  font-size: 1.1rem;
+}
+
+.suggestion-name {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Add transition for darkening effect */
+.home-container > *:not(.search-section) {
+  transition: opacity 0.3s ease;
+}
+
+.search-focused .home-container > *:not(.search-section) {
+  opacity: 0.3;
 }

@@ -1,49 +1,63 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/axios';
 import '../styles/home.css';
 
 const Home = () => {
   const [stockInput, setStockInput] = useState('');
   const [inputError, setInputError] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
   const navigate = useNavigate();
 
-  const isValidSymbol = (sym) => {
-    return /^[A-Za-z]{1,5}$/.test(sym);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const symbol = stockInput.trim().toUpperCase();
-    
-    if (!isValidSymbol(symbol)) {
-      setInputError('Please enter a valid stock symbol (1-5 letters)');
-      return;
-    }
-    
+  const handleSearch = async (value) => {
+    setStockInput(value);
     setInputError('');
-    navigate(`/stock/${symbol}`);
+
+    if (value.length >= 1) {
+      try {
+        const response = await api.get('/stocks/search', {
+          params: { query: value }
+        });
+        
+        if (Array.isArray(response.data)) {
+          setSuggestions(response.data.slice(0, 5));
+        } else {
+          setSuggestions([]);
+        }
+      } catch (error) {
+        console.error('Search error:', error);
+        setSuggestions([]);
+      }
+    } else {
+      setSuggestions([]);
+    }
   };
 
-  const handleInputChange = (e) => {
-    setStockInput(e.target.value);
-    if (inputError) setInputError('');
+  const handleSuggestionClick = (symbol) => {
+    navigate(`/stock/${symbol}`);
+    setStockInput('');
+    setSuggestions([]);
+    setIsFocused(false);
   };
 
   return (
-    <div className="home-wrapper">
+    <div className={`home-wrapper ${isFocused ? 'search-focused' : ''}`}>
       <div className="home-container">
         <section className="search-section">
           <h1 className="search-title">Search Stock Market Data</h1>
-          <form onSubmit={handleSubmit} className="search-form">
+          <div className="search-container">
             <div className={`input-wrapper ${isFocused ? 'focused' : ''}`}>
               <i className="fas fa-search search-icon"></i>
               <input
                 type="text"
                 value={stockInput}
-                onChange={handleInputChange}
+                onChange={(e) => handleSearch(e.target.value)}
                 onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
+                onBlur={() => {
+                  // Delay to allow clicking suggestions
+                  setTimeout(() => setIsFocused(false), 200);
+                }}
                 placeholder="Enter stock symbol (e.g., AAPL)"
                 className={`search-input ${inputError ? 'error' : ''}`}
               />
@@ -51,18 +65,34 @@ const Home = () => {
                 <button
                   type="button"
                   className="clear-button"
-                  onClick={() => setStockInput('')}
+                  onClick={() => {
+                    setStockInput('');
+                    setSuggestions([]);
+                  }}
                 >
                   <i className="fas fa-times"></i>
                 </button>
               )}
             </div>
+
+            {/* Search Suggestions */}
+            {isFocused && suggestions.length > 0 && (
+              <div className="suggestions-container">
+                {suggestions.map((suggestion) => (
+                  <div
+                    key={suggestion.symbol}
+                    className="suggestion-item"
+                    onClick={() => handleSuggestionClick(suggestion.symbol)}
+                  >
+                    <div className="suggestion-symbol">{suggestion.symbol}</div>
+                    <div className="suggestion-name">{suggestion.name}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
             {inputError && <div className="error-message">{inputError}</div>}
-            <button type="submit" className="search-button">
-              <i className="fas fa-search"></i>
-              <span>Search</span>
-            </button>
-          </form>
+          </div>
         </section>
 
         <section className="featured-section">
