@@ -5,6 +5,26 @@ import StockService from '../services/StockService.js';
 import api from '../api/axios';
 import '../styles/stock-data.css';
 import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const handleAddToWatchlist = async () => {
   try {
@@ -31,4 +51,10 @@ const handleAddToWatchlist = async () => {
     console.error('Error adding to watchlist:', err);
     alert(err.response?.data?.message || 'Failed to add to watchlist');
   }
-}; 
+};
+
+const StockData = () => {
+  // ... rest of your component code ...
+};
+
+export default StockData; 
