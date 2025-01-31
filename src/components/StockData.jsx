@@ -1,3 +1,11 @@
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import StockService from '../services/StockService.js';
+import api from '../api/axios';
+import '../styles/stock-data.css';
+import { Line } from 'react-chartjs-2';
+
 const handleAddToWatchlist = async () => {
   try {
     const lastClose = stockData.historicalData[stockData.historicalData.length - 1].close;
