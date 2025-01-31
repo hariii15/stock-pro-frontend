@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { stockService } from '../services/stockService';
+import { StockService } from '../services/stockService';
 import api from '../api/axios';
 import '../styles/stock-data.css';
 import { Line } from 'react-chartjs-2';
@@ -45,7 +45,7 @@ const StockData = () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await stockService.getStockData(symbol);
+        const data = await StockService.getStockData(symbol);
         setStockData(data);
       } catch (err) {
         console.error('Stock Data Error:', err);
