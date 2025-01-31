@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { StockService } from '../services/stockService';
+import StockService from '../services/stockService';
 import api from '../api/axios';
 import '../styles/stock-data.css';
 import { Line } from 'react-chartjs-2';
