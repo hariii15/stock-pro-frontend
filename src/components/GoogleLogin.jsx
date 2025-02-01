@@ -15,14 +15,17 @@ const GoogleLogin = () => {
         const userInfo = await axios.get(
           'https://www.googleapis.com/oauth2/v3/userinfo',
           {
-            headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+            headers: { 
+              'Authorization': `Bearer ${tokenResponse.access_token}`,
+              'Accept': 'application/json'
+            },
           }
         );
         
         console.log('Google user info:', userInfo.data);
 
         // Then send to our backend
-        const res = await api.post('/api/auth/google', {
+        const res = await api.post('/auth/google', {
           token: tokenResponse.access_token,
           userData: {
             googleId: userInfo.data.sub,
@@ -36,20 +39,14 @@ const GoogleLogin = () => {
         
         if (res.data.token) {
           await login(res.data.token);
-          // Verify token before redirect
-          try {
-            const verifyRes = await api.get('/api/auth/verify');
-            if (verifyRes.data.success) {
-              window.location.href = '/dashboard';
-            }
-          } catch (verifyError) {
-            console.error('Token verification failed:', verifyError);
-            alert('Authentication failed. Please try again.');
-          }
+          window.location.href = '/dashboard';
         }
       } catch (error) {
-        console.error('Authentication error:', error);
-        console.error('Error details:', error.response?.data);
+        console.error('Authentication error:', {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status
+        });
         alert('Authentication failed. Please try again.');
       }
     },
@@ -58,12 +55,20 @@ const GoogleLogin = () => {
       alert('Authentication failed. Please try again.');
     },
     flow: 'implicit',
-    scope: 'email profile'
+    scope: 'email profile',
+    cookiePolicy: 'single_host_origin'
   });
 
   return (
     <button 
-      onClick={() => googleLogin()} 
+      onClick={() => {
+        try {
+          googleLogin();
+        } catch (error) {
+          console.error('Google login button error:', error);
+          alert('Failed to initialize Google login. Please try again.');
+        }
+      }} 
       className="auth-button google-login"
       style={{
         padding: '10px 20px',

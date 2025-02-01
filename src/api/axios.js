@@ -2,11 +2,11 @@ import axios from 'axios';
 
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: 'https://stock-pro-backend.onrender.com/api',  // Note: explicit /api prefix
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'Origin': import.meta.env.VITE_FRONTEND_URL
+    'Origin': 'https://stock-pro-frontend-one.vercel.app'
   },
   timeout: 10000, // Add timeout
   withCredentials: true,
@@ -18,6 +18,13 @@ const api = axios.create({
 // Add request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
+    // Log request for debugging
+    console.log('Making request:', {
+      url: config.url,
+      method: config.method,
+      headers: config.headers,
+      data: config.data
+    });
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -33,6 +40,13 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
+    // Log error for debugging
+    console.error('API Error:', {
+      url: error.config?.url,
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message
+    });
     if (error.code === 'ERR_NETWORK') {
       console.log('Network error - attempting to reconnect...');
       // You could implement retry logic here
