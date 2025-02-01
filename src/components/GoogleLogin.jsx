@@ -1,18 +1,11 @@
 import { useGoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../contexts/AuthContext';
+import api from '../api/axios';
 import axios from 'axios';
 
 const GoogleLogin = () => {
   const { login } = useAuth();
   
-  const apiClient = axios.create({
-    baseURL: 'https://stock-pro-backend.onrender.com',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  });
-
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
@@ -24,8 +17,8 @@ const GoogleLogin = () => {
           }
         );
 
-        // Then send to our backend with a different endpoint name
-        const res = await apiClient.post('/api/authenticate/social', {
+        // Then send to our backend
+        const res = await api.post('/api/auth/google-login', {
           provider: 'google',
           token: tokenResponse.access_token,
           userData: {
@@ -38,7 +31,6 @@ const GoogleLogin = () => {
         
         if (res.data.token) {
           await login(res.data.token);
-          // Redirect or update UI after successful login
           window.location.href = '/dashboard';
         }
       } catch (error) {

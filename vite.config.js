@@ -24,7 +24,7 @@ export default defineConfig({
         changeOrigin: true,
         secure: true,
         headers: {
-          'Origin': 'http://localhost:5173'
+          'Origin': 'https://stock-pro-frontend-one.vercel.app'
         }
       }
     }

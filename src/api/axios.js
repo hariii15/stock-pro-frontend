@@ -2,9 +2,11 @@ import axios from 'axios';
 
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: 'http://localhost:5001/api', // Keep only one /api prefix
+  baseURL: import.meta.env.VITE_API_URL,
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'Origin': import.meta.env.VITE_FRONTEND_URL
   },
   timeout: 10000, // Add timeout
   withCredentials: true,
@@ -64,6 +66,19 @@ api.interceptors.response.use(
     // Return the promise in which recalls axios to retry the request
     await backoff;
     return api(config);
+  }
+);
+
+// Add response interceptor for handling errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Handle unauthorized access
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
   }
 );
 
