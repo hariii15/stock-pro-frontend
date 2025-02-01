@@ -4,6 +4,13 @@ import axios from 'axios';
 
 const GoogleLogin = () => {
   const { login } = useAuth();
+  
+  const apiClient = axios.create({
+    baseURL: 'https://stock-pro-backend.onrender.com',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -17,7 +24,7 @@ const GoogleLogin = () => {
         );
 
         // Then send to our backend
-        const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/google-login`, {
+        const res = await apiClient.post('/api/auth/google-login', {
           googleId: userInfo.data.sub,
           email: userInfo.data.email,
           name: userInfo.data.name,
@@ -29,7 +36,6 @@ const GoogleLogin = () => {
         }
       } catch (error) {
         console.error('Google login error:', error.response?.data || error.message);
-        // Add user-friendly error handling
         alert('Login failed. Please try again.');
       }
     },
