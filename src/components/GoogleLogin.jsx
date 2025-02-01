@@ -19,7 +19,6 @@ const GoogleLogin = () => {
 
         // Then send to our backend
         const res = await api.post('/api/auth/google-login', {
-          provider: 'google',
           token: tokenResponse.access_token,
           userData: {
             googleId: userInfo.data.sub,
@@ -31,7 +30,11 @@ const GoogleLogin = () => {
         
         if (res.data.token) {
           await login(res.data.token);
-          window.location.href = '/dashboard';
+          // Don't redirect yet, wait for token validation
+          const user = await api.get('/api/auth/verify');
+          if (user.data.success) {
+            window.location.href = '/dashboard';
+          }
         }
       } catch (error) {
         console.error('Authentication error:', error.response?.data || error.message);
