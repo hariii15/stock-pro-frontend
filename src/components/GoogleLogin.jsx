@@ -8,7 +8,7 @@ const GoogleLogin = () => {
   const googleLogin = useGoogleLogin({
     onSuccess: async (response) => {
       try {
-        const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/google`, {
+        const res = await axios.post('/api/auth/google', {
           token: response.access_token
         });
         
@@ -21,7 +21,8 @@ const GoogleLogin = () => {
     },
     onError: (error) => {
       console.error('Google Login Failed:', error);
-    }
+    },
+    flow: 'implicit'
   });
 
   return (

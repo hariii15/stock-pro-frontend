@@ -3,12 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <link href="/dist/styles.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <title>Trade Vista Pro</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://accounts.google.com https://*.googleapis.com; script-src 'self' 'unsafe-inline' https://accounts.google.com https://*.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;">
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self' https://accounts.google.com https://*.googleapis.com http://localhost:5001;
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://*.googleapis.com https://cdnjs.cloudflare.com;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://accounts.google.com;
+      font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
+      img-src 'self' data: https:;
+      connect-src 'self' http://localhost:5001 https://accounts.google.com https://*.googleapis.com;
+      frame-src 'self' https://accounts.google.com;
+    ">
   </head>
   <body>
     <div id="root"></div>

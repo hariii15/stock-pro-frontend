@@ -24,7 +24,8 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       }
-    }
+    },
+    cors: true
   },
   define: {
     'process.env': {}
