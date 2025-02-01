@@ -3,13 +3,12 @@ import axios from 'axios';
 // Create axios instance with default config
 const api = axios.create({
   baseURL: 'https://stock-pro-backend.onrender.com/api',  // Note: explicit /api prefix
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'Origin': 'https://stock-pro-frontend-one.vercel.app'
+    'Accept': 'application/json'
   },
   timeout: 10000, // Add timeout
-  withCredentials: true,
   // Add retry logic
   retry: 3,
   retryDelay: 1000
@@ -22,8 +21,7 @@ api.interceptors.request.use(
     console.log('Making request:', {
       url: config.url,
       method: config.method,
-      headers: config.headers,
-      data: config.data
+      headers: config.headers
     });
     const token = localStorage.getItem('token');
     if (token) {
