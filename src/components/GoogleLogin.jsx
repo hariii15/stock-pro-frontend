@@ -8,18 +8,26 @@ const GoogleLogin = () => {
   
   const testBackendConnection = async () => {
     try {
-      const res = await api.get('/test');
-      console.log('Backend test response:', res.data);
+      // Test the main backend connection
+      const testRes = await api.get('/test');
+      console.log('General backend test:', testRes.data);
+
+      // Test the auth routes specifically
+      const authRes = await api.get('/auth/test');
+      console.log('Auth routes test:', authRes.data);
+
       alert('Backend connection successful!');
     } catch (error) {
       console.error('Backend test error:', error.response?.data || error.message);
-      alert('Backend connection failed!');
+      alert(`Backend connection failed: ${error.message}`);
     }
   };
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
+        console.log('Starting Google login process...');
+        
         // Get user info from Google
         const userInfo = await axios.get(
           'https://www.googleapis.com/oauth2/v3/userinfo',
@@ -30,6 +38,8 @@ const GoogleLogin = () => {
             }
           }
         );
+
+        console.log('Got user info from Google');
 
         // Send to backend
         const res = await api.post('/auth/google', {
@@ -42,12 +52,18 @@ const GoogleLogin = () => {
           }
         });
 
+        console.log('Backend auth response:', res.data);
+
         if (res.data.token) {
           await login(res.data.token);
           window.location.href = '/dashboard';
         }
       } catch (error) {
-        console.error('Auth error:', error.response?.data || error.message);
+        console.error('Auth error:', {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status
+        });
         alert('Login failed. Please try again.');
       }
     },
@@ -57,13 +73,22 @@ const GoogleLogin = () => {
   });
 
   return (
-    <div>
+    <div className="auth-buttons">
       <button onClick={googleLogin} className="auth-button google-login">
         Continue with Google
       </button>
       <button 
         onClick={testBackendConnection}
-        style={{ marginTop: '10px' }}
+        className="test-button"
+        style={{ 
+          marginTop: '10px',
+          padding: '8px 16px',
+          backgroundColor: '#4CAF50',
+          color: 'white',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: 'pointer'
+        }}
       >
         Test Backend Connection
       </button>
