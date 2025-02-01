@@ -9,6 +9,8 @@ const GoogleLogin = () => {
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
+        console.log('Google token received:', tokenResponse);
+        
         // First, get user info from Google
         const userInfo = await axios.get(
           'https://www.googleapis.com/oauth2/v3/userinfo',
@@ -16,9 +18,11 @@ const GoogleLogin = () => {
             headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
           }
         );
+        
+        console.log('Google user info:', userInfo.data);
 
         // Then send to our backend
-        const res = await api.post('/api/auth/google-login', {
+        const res = await api.post('/api/auth/google', {
           token: tokenResponse.access_token,
           userData: {
             googleId: userInfo.data.sub,
@@ -28,21 +32,29 @@ const GoogleLogin = () => {
           }
         });
         
+        console.log('Backend response:', res.data);
+        
         if (res.data.token) {
           await login(res.data.token);
-          // Don't redirect yet, wait for token validation
-          const user = await api.get('/api/auth/verify');
-          if (user.data.success) {
-            window.location.href = '/dashboard';
+          // Verify token before redirect
+          try {
+            const verifyRes = await api.get('/api/auth/verify');
+            if (verifyRes.data.success) {
+              window.location.href = '/dashboard';
+            }
+          } catch (verifyError) {
+            console.error('Token verification failed:', verifyError);
+            alert('Authentication failed. Please try again.');
           }
         }
       } catch (error) {
-        console.error('Authentication error:', error.response?.data || error.message);
+        console.error('Authentication error:', error);
+        console.error('Error details:', error.response?.data);
         alert('Authentication failed. Please try again.');
       }
     },
     onError: (error) => {
-      console.error('Authentication Failed:', error);
+      console.error('Google Login Failed:', error);
       alert('Authentication failed. Please try again.');
     },
     flow: 'implicit',
