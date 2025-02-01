@@ -22,7 +22,10 @@ export default defineConfig({
       '/api': {
         target: 'https://stock-pro-backend.onrender.com',
         changeOrigin: true,
-        secure: true
+        secure: true,
+        headers: {
+          'Origin': 'http://localhost:5173'
+        }
       }
     }
   },
